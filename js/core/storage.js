@@ -67,7 +67,17 @@ export function isLevelUnlocked(gameId, modeId, levelId) {
   return Boolean(prev?.completed);
 }
 
-export function recordRun({ gameId, modeId, levelId, correct, total, timeMs, passed, stars }) {
+export function recordRun({
+  gameId,
+  modeId,
+  levelId,
+  correct,
+  total,
+  timeMs,
+  passed,
+  stars,
+  extra = null,
+}) {
   return updateState((state) => {
     if (!state.games[gameId]) state.games[gameId] = {};
     if (!state.games[gameId][modeId]) state.games[gameId][modeId] = {};
@@ -81,7 +91,7 @@ export function recordRun({ gameId, modeId, levelId, correct, total, timeMs, pas
       completed: false,
     };
 
-    state.games[gameId][modeId][key] = {
+    const next = {
       stars: Math.max(prev.stars, stars),
       bestCorrect: Math.max(prev.bestCorrect, correct),
       bestTimeMs:
@@ -89,6 +99,18 @@ export function recordRun({ gameId, modeId, levelId, correct, total, timeMs, pas
       attempts: prev.attempts + 1,
       completed: prev.completed || passed,
     };
+
+    if (extra) {
+      const hints = Number(extra.hints) || 0;
+      const waypoints = Number(extra.waypoints) || 0;
+      next.bestHints =
+        prev.bestHints == null ? hints : Math.min(prev.bestHints, hints);
+      next.lastHints = hints;
+      next.lastWaypoints = waypoints;
+      next.runs = [...(prev.runs || []), { timeMs, hints, waypoints, at: Date.now() }].slice(-40);
+    }
+
+    state.games[gameId][modeId][key] = next;
 
     state.stats.played += 1;
     state.stats.correct += correct;

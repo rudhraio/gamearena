@@ -1,6 +1,7 @@
 import { GAMES, MATH_MODES, routes } from "../core/registry.js";
 import { accuracyPct, isLevelUnlocked, loadState, modeCompletion } from "../core/storage.js";
 import { getMathLevels } from "../games/math.js";
+import { getZipLevels } from "../games/zip.js";
 import { mountChrome } from "../core/shell.js";
 import { icon } from "../core/icons.js";
 
@@ -36,6 +37,15 @@ function renderHub() {
   MATH_MODES.forEach((mode) => {
     mathDone += modeCompletion("math", mode.id, getMathLevels(mode.id).length).done;
   });
+  const zipLevels = getZipLevels().length;
+  const zipDone = modeCompletion("zip", "zip", zipLevels).done;
+  const glyphs = { math: icon.math, zip: icon.zip, riddles: icon.riddle };
+
+  const gameScore = (game) => {
+    if (game.id === "math") return `${String(mathDone).padStart(2, "0")}/${mathLevels}`;
+    if (game.id === "zip") return `${String(zipDone).padStart(2, "0")}/${String(zipLevels).padStart(2, "0")}`;
+    return "000/000";
+  };
 
   const bind = (id, value) => {
     const el = document.getElementById(id);
@@ -52,7 +62,7 @@ function renderHub() {
     grid.innerHTML = GAMES.map((game) => `
       <a class="card-link" href="${game.href}">
         <div class="cluster-between">
-          <span class="card-glyph">${game.id === "math" ? icon.math : icon.riddle}</span>
+          <span class="card-glyph">${glyphs[game.id] || icon.riddle}</span>
           <span class="chip ${game.status === "live" ? "chip-fill" : ""}">${game.status}</span>
         </div>
         <h2 class="display">${game.title}</h2>
@@ -61,8 +71,8 @@ function renderHub() {
           <p class="body-mute">${game.blurb}</p>
         </div>
         <div class="cluster-between">
-          <span class="mono">${game.status === "live" ? "Open math →" : "Coming soon"}</span>
-          <span class="mono">${game.id === "math" ? `${String(mathDone).padStart(2, "0")}/${mathLevels}` : "000/000"}</span>
+          <span class="mono">${game.status === "live" ? `Open ${game.title.toLowerCase()} →` : "Coming soon"}</span>
+          <span class="mono">${gameScore(game)}</span>
         </div>
       </a>
     `).join("");

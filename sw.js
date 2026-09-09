@@ -1,9 +1,11 @@
-const CACHE = "gamearena-v3";
+const CACHE = "gamearena-v5";
 const PRECACHE = [
   "/index.html",
   "/math/index.html",
   "/levels/index.html",
   "/play/index.html",
+  "/zip/index.html",
+  "/zip/play/index.html",
   "/riddles/index.html",
   "/offline/index.html",
   "/css/app.css",
@@ -15,10 +17,13 @@ const PRECACHE = [
   "/js/core/shell.js",
   "/js/core/icons.js",
   "/js/games/math.js",
+  "/js/games/zip.js",
   "/js/pages/hub.js",
   "/js/pages/math.js",
   "/js/pages/levels.js",
   "/js/pages/play.js",
+  "/js/pages/zip.js",
+  "/js/pages/zip-play.js",
   "/js/pages/soon.js",
   "/icons/favicon.svg",
   "/icons/icon-192.png",

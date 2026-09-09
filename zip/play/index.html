@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
+    <title>ZIP PLAY · GAME ARENA</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/app.css" />
+    <script type="module" src="/js/pages/zip-play.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+  </head>
+  <body class="arena-bg" x-data="zipPlay">
+    <div id="install-bar" class="install-bar hidden">
+      <div class="page install-bar-inner">
+        <p class="wordmark">Install GAME ARENA</p>
+        <div class="cluster-sm">
+          <button class="btn" data-dismiss type="button">Later</button>
+          <button class="btn btn-fill" data-install type="button">Install</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page is-play is-zip">
+      <header class="site-header" data-nav></header>
+
+      <div class="play-body zip-play-body" :class="{ hidden: showStart || showResult }">
+        <div class="hud-grid">
+          <div class="hud-item">
+            <p class="kicker">Clock</p>
+            <p class="mono" x-text="clock()"></p>
+          </div>
+          <div class="hud-item">
+            <p class="kicker">Links</p>
+            <p class="mono" x-text="puzzle ? String(puzzle.links).padStart(2,'0') : '00'"></p>
+          </div>
+          <div class="hud-item">
+            <p class="kicker">Hints</p>
+            <p class="mono" x-text="String(hints).padStart(2,'0')"></p>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" :style="`width:${progressPct()}%`"></div>
+        </div>
+
+        <section class="zip-stage">
+          <div
+            class="zip-board"
+            x-ref="board"
+            :style="puzzle ? `--n:${puzzle.size}` : ''"
+            role="application"
+            aria-label="Zip grid"
+          >
+            <div class="zip-grid" x-show="puzzle">
+              <template x-for="cell in cellList" :key="cell.key">
+                <div
+                  class="zip-cell"
+                  data-zip-cell
+                  :data-r="cell.r"
+                  :data-c="cell.c"
+                  :class="{ 'is-path': onPath(cell.r, cell.c), 'is-head': isHead(cell.r, cell.c) }"
+                ></div>
+              </template>
+            </div>
+            <svg class="zip-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                :stroke-width="strokeWidth()"
+                :d="pathD()"
+              ></path>
+              <circle
+                :cx="headPoint() ? headPoint().x : 0"
+                :cy="headPoint() ? headPoint().y : 0"
+                :r="headPoint() ? headPoint().r : 0"
+                fill="currentColor"
+              ></circle>
+            </svg>
+            <div class="zip-walls">
+              <template x-for="wall in wallList" :key="wall.key">
+                <span class="zip-wall" :style="wallStyle(wall)"></span>
+              </template>
+            </div>
+            <div class="zip-nums" aria-hidden="true">
+              <template x-for="cell in cellList" :key="'n'+cell.key">
+                <div class="zip-num-cell">
+                  <span class="zip-num" x-show="cell.num" x-text="cell.num"></span>
+                </div>
+              </template>
+            </div>
+          </div>
+        </section>
+
+        <section class="zip-dock">
+          <div class="zip-tools">
+            <button class="btn" type="button" @click="hint()">Hint</button>
+            <button class="btn" type="button" @click="undo()">Undo</button>
+            <button class="btn" type="button" @click="clearPath()">Clear</button>
+          </div>
+          <p class="mono zip-fill" x-text="filledLabel()"></p>
+        </section>
+      </div>
+    </div>
+
+    <div class="overlay" x-show="showStart" x-cloak>
+      <div class="drawer stack-lg">
+        <a class="drawer-close" :href="levelsHref" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </a>
+        <p class="kicker" x-text="level ? `ZIP · ${level.size}×${level.size}` : ''"></p>
+        <h2 class="display" x-text="level ? level.name : 'GO'"></h2>
+        <p class="body-mute body-full">Start on 1. Draw one path through every cell. Hit the numbers in order. Drag back to erase. Walls block. Hints are unlimited.</p>
+        <div class="actions is-stack">
+          <button class="btn btn-fill btn-svg" type="button" @click="start()">Start run</button>
+          <a class="btn btn-back" :href="levelsHref">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M14 5L7 12l7 7"/><path d="M7 12h13"/></svg>
+            Close
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" x-show="showResult" x-cloak>
+      <div class="drawer stack-lg">
+        <a class="drawer-close" :href="levelsHref" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </a>
+        <p class="kicker">Path locked</p>
+        <h2 class="display">Zipped</h2>
+        <p class="mono" x-text="`${clock()} · ${puzzle ? puzzle.links : 0} links · ${hints} hints`"></p>
+        <div class="stars stars-center">
+          <span class="star" :class="{ 'is-on': stars >= 1 }"></span>
+          <span class="star" :class="{ 'is-on': stars >= 2 }"></span>
+          <span class="star" :class="{ 'is-on': stars >= 3 }"></span>
+        </div>
+        <p class="body-mute body-full" x-show="nextLevel">Next grid size unlocked.</p>
+        <p class="body-mute body-full" x-show="!nextLevel">All five sizes are open on this device.</p>
+        <div class="actions is-stack">
+          <button class="btn btn-fill" type="button" @click="start()">Fresh path</button>
+          <a class="btn" x-show="nextLevel" :href="nextHref">Next size</a>
+          <a class="btn btn-back" :href="levelsHref">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M14 5L7 12l7 7"/><path d="M7 12h13"/></svg>
+            Close
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

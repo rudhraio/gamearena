@@ -4,12 +4,13 @@
 export const ARENA = {
   name: "GAME ARENA",
   short: "GA",
-  tagline: "MATH. RIDDLES. PRECISION.",
+  tagline: "MATH. ZIP. RIDDLES.",
 };
 
 export const routes = {
   hub: "/",
   math: "/math/",
+  zip: "/zip/",
   riddles: "/riddles/",
   offline: "/offline/",
   levels(mode) {
@@ -17,6 +18,9 @@ export const routes = {
   },
   play(mode, level) {
     return `/play/?mode=${encodeURIComponent(mode)}&level=${level}`;
+  },
+  zipPlay(level) {
+    return `/zip/play/?level=${level}`;
   },
 };
 
@@ -32,9 +36,19 @@ export const GAMES = [
     accent: "precision",
   },
   {
+    id: "zip",
+    title: "ZIP",
+    kicker: "02 / LIVE",
+    tagline: "One path. Every cell.",
+    blurb: "Connect the numbers in order and fill the grid. A fresh riddle every run.",
+    href: routes.zip,
+    status: "live",
+    accent: "path",
+  },
+  {
     id: "riddles",
     title: "RIDDLES",
-    kicker: "02 / SOON",
+    kicker: "03 / SOON",
     tagline: "Think sideways.",
     blurb: "Logic locks, word traps, and pattern riddles. Architecture is ready. Content lands next.",
     href: routes.riddles,

@@ -2,7 +2,7 @@
   "id": "/",
   "name": "GAME ARENA",
   "short_name": "ARENA",
-  "description": "A standalone arcade of math and riddle games. Progress stays on this device.",
+  "description": "A standalone arcade of math, zip, and riddle games. Progress stays on this device.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

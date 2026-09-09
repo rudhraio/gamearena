@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
+    <title>ZIP · GAME ARENA</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/app.css" />
+    <script type="module" src="/js/pages/zip.js"></script>
+  </head>
+  <body class="arena-bg">
+    <div id="install-bar" class="install-bar hidden">
+      <div class="page install-bar-inner">
+        <p class="wordmark">Install GAME ARENA</p>
+        <div class="cluster-sm">
+          <button class="btn" data-dismiss type="button">Later</button>
+          <button class="btn btn-fill" data-install type="button">Install</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <header class="site-header" data-nav data-back="/" data-crumbs="Hub:/" data-current="Zip"></header>
+
+      <section class="page-hero enter">
+        <p class="kicker">ZIP / PATH</p>
+        <div class="page-hero-row">
+          <h1 class="display">GRID BAY</h1>
+          <p class="body-mute">Five sizes. A new riddle every run. Draw one line through every cell, numbers in order.</p>
+        </div>
+        <hr class="rule" />
+      </section>
+
+      <section id="level-grid" class="section level-grid"></section>
+
+      <footer class="site-footer">
+        <p class="kicker">© <span data-year></span> GAME ARENA</p>
+        <p class="mono">5 GRIDS / 8–15 LINKS</p>
+      </footer>
+    </div>
+  </body>
+</html>
