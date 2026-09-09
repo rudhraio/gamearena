@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="GAME ARENA — a standalone arcade of math and riddle games. Local progress. No login." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
+    <title>GAME ARENA</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/app.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+    <script type="module" src="/js/pages/hub.js"></script>
+  </head>
+  <body class="arena-bg">
+    <noscript>
+      <div class="page pad">GAME ARENA needs JavaScript on this device.</div>
+    </noscript>
+    <div id="install-bar" class="install-bar hidden">
+      <div class="page install-bar-inner">
+        <p class="wordmark">Install GAME ARENA as a standalone app</p>
+        <div class="cluster-sm">
+          <button class="btn" data-dismiss type="button">Later</button>
+          <button class="btn btn-fill" data-install type="button">Install</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <header class="site-header" data-nav data-sound="1"></header>
+
+      <section class="page-hero enter">
+        <p class="kicker">00 / Arcade hub</p>
+        <div class="page-hero-row">
+          <h1 class="display-xl">PLAY<br />CLEAN.</h1>
+          <p class="body-mute">A light, boxy cockpit for math and riddles. Progress lives on this device. Install it. Drive it.</p>
+        </div>
+        <hr class="rule" />
+      </section>
+
+      <section class="section grid-stats">
+        <div class="stat-box">
+          <p class="kicker">Runs</p>
+          <p id="stat-played" class="stat-value">00</p>
+        </div>
+        <div class="stat-box">
+          <p class="kicker">Accuracy</p>
+          <p id="stat-acc" class="stat-value">0%</p>
+        </div>
+        <div class="stat-box">
+          <p class="kicker">Day streak</p>
+          <p id="stat-streak" class="stat-value">00</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cluster-between section-head">
+          <div class="stack-tight">
+            <p class="kicker">01 / Disciplines</p>
+            <h2 class="display-sm">Select a bay</h2>
+          </div>
+          <p class="mono" id="math-progress">00 / 00</p>
+        </div>
+        <div id="game-grid" class="grid-2"></div>
+      </section>
+
+      <section class="section grid-2">
+        <div class="panel pad corner-frame" id="daily-target"></div>
+        <div class="panel-flat pad">
+          <div class="stack-lg">
+            <p class="kicker">Systems</p>
+            <h3 class="display-sm">How it drives</h3>
+            <ul class="list">
+              <li>No accounts. Scores stay in local storage.</li>
+              <li>Math answers are always buttons — never a text field.</li>
+              <li>Clear a stage at 8/10 to unlock the next digit spec.</li>
+              <li>Install as a PWA and play offline after first load.</li>
+            </ul>
+            <button
+              class="btn"
+              type="button"
+              hx-get="/partials/briefing.html"
+              hx-target="#briefing-slot"
+              hx-swap="innerHTML"
+            >
+              Load spec sheet
+            </button>
+            <div id="briefing-slot"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <p class="kicker">© <span data-year></span> GAME ARENA</p>
+        <p class="mono">MONO / LIGHT / LOCAL</p>
+      </footer>
+    </div>
+  </body>
+</html>

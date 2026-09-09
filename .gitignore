@@ -1,0 +1,38 @@
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and caches
+*.log
+npm-debug.log*
+.cache/
+.turbo/
+dist/
+node_modules/
+
+# Local tooling
+.wrangler/
+.dev.vars
+.python-version
+__pycache__/
+*.pyc
+
+# Cursor
+.cursor/

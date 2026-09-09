@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GAME ARENA">
+  <rect width="512" height="512" fill="#f4f2ec"/>
+  <rect x="28" y="28" width="456" height="456" fill="none" stroke="#0b0b0b" stroke-width="16"/>
+  <rect x="64" y="64" width="384" height="384" fill="#0b0b0b"/>
+  <text x="256" y="318" text-anchor="middle" fill="#f4f2ec" font-family="Arial Black, Helvetica, sans-serif" font-size="196" font-weight="700" letter-spacing="8">GA</text>
+</svg>

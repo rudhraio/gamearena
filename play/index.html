@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
+    <title>PLAY · GAME ARENA</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/app.css" />
+    <script type="module" src="/js/pages/play.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+  </head>
+  <body class="arena-bg" x-data="mathPlay" @keydown.window="
+    if (showStart && ($event.key === 'Enter' || $event.key === ' ')) { $event.preventDefault(); start(); return; }
+    if ($event.key >= '0' && $event.key <= '9') press($event.key);
+    if ($event.key === 'Backspace') { $event.preventDefault(); backspace(); }
+    if ($event.key === 'Enter') { $event.preventDefault(); submit(); }
+    if ($event.key === 'Escape') clear();
+  ">
+    <div id="install-bar" class="install-bar hidden">
+      <div class="page install-bar-inner">
+        <p class="wordmark">Install GAME ARENA</p>
+        <div class="cluster-sm">
+          <button class="btn" data-dismiss type="button">Later</button>
+          <button class="btn btn-fill" data-install type="button">Install</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page is-play">
+      <header class="site-header" data-nav></header>
+
+      <div class="play-body" :class="{ hidden: showStart || showResult }">
+        <div class="hud-grid">
+          <div class="hud-item">
+            <p class="kicker">Shot</p>
+            <p class="mono" x-text="`${Math.min(index + 1, total)}/${total}`"></p>
+          </div>
+          <div class="hud-item">
+            <p class="kicker">Clock</p>
+            <p class="mono" x-text="clock()"></p>
+          </div>
+          <div class="hud-item">
+            <p class="kicker">Streak</p>
+            <p class="mono" x-text="String(streak).padStart(2,'0')"></p>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" :style="`width:${progressPct()}%`"></div>
+        </div>
+
+        <section class="eq-stage">
+          <template x-if="current">
+            <div class="eq-board">
+              <div class="eq-row">
+                <span></span>
+                <span class="eq-num" x-text="current.a"></span>
+              </div>
+              <div class="eq-row">
+                <span class="eq-op" x-text="current.symbol"></span>
+                <span class="eq-num" x-text="current.b"></span>
+              </div>
+              <div class="eq-row eq-sum">
+                <span></span>
+                <span
+                  class="eq-num answer-tape"
+                  :class="{ 'is-ok': flash === 'ok', 'is-bad': flash === 'bad' }"
+                  x-text="input === '' ? '▮' : input"
+                ></span>
+              </div>
+              <p class="kicker align-end" x-show="flash === 'bad'">Correct locked in</p>
+            </div>
+          </template>
+        </section>
+
+        <section class="keypad">
+          <template x-for="k in keys()" :key="k">
+            <button class="key" type="button" @click="press(k)" x-text="k"></button>
+          </template>
+          <button class="key" type="button" @click="clear()">C</button>
+          <button class="key" type="button" @click="press('0')">0</button>
+          <button class="key" type="button" @click="backspace()">⌫</button>
+          <button class="key key-go" type="button" @click="submit()" :disabled="locked || input === ''">Lock in</button>
+        </section>
+      </div>
+    </div>
+
+    <div class="overlay" x-show="showStart" x-cloak>
+      <div class="drawer stack-lg">
+        <p class="kicker" x-text="mode && level ? `${mode.title} · LVL ${String(levelId).padStart(2,'0')}` : ''"></p>
+        <h2 class="display" x-text="level ? level.name : 'GO'"></h2>
+        <p class="body-mute body-full" x-text="level ? `${level.desc}. Ten shots. Pass at ${level.pass}/10.` : ''"></p>
+        <div class="actions">
+          <button class="btn btn-fill btn-svg" type="button" @click="start()">Start run</button>
+          <a class="btn btn-svg" :href="levelsHref">Back to stages</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" x-show="showResult" x-cloak>
+      <div class="drawer stack-lg">
+        <p class="kicker" x-text="passed ? 'Stage cleared' : 'Gate holds'"></p>
+        <h2 class="display" x-text="passed ? 'APEX' : 'RETRY'"></h2>
+        <p class="mono" x-text="`${correct}/${total} · ${clock()}`"></p>
+        <div class="stars stars-center">
+          <span class="star" :class="{ 'is-on': stars >= 1 }"></span>
+          <span class="star" :class="{ 'is-on': stars >= 2 }"></span>
+          <span class="star" :class="{ 'is-on': stars >= 3 }"></span>
+        </div>
+        <p class="body-mute body-full" x-show="passed && nextLevel">Next gate unlocked.</p>
+        <p class="body-mute body-full" x-show="!passed">Need 8/10 to open the next digit spec.</p>
+        <div class="actions">
+          <a class="btn btn-fill" :href="retryHref">Run again</a>
+          <a class="btn" x-show="passed && nextLevel" :href="nextHref">Next stage</a>
+          <a class="btn" x-show="!passed || !nextLevel" :href="levelsHref">Back to stages</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
