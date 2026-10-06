@@ -1,6 +1,7 @@
 import { routes } from "../core/registry.js";
-import { getModeProgress, isLevelUnlocked } from "../core/storage.js";
+import { getModeProgress, isLevelUnlocked, safeInt } from "../core/storage.js";
 import { getZipLevels } from "../games/zip.js";
+import { ZIP_DIFFICULTIES, zipModeId } from "../games/zip.js";
 import { mountChrome } from "../core/shell.js";
 
 function pad(n) {
@@ -20,21 +21,35 @@ function starsHtml(count) {
     .join("");
 }
 
+let difficulty = new URLSearchParams(location.search).get("difficulty") || "low";
+if (!ZIP_DIFFICULTIES.some((mode) => mode.id === difficulty)) difficulty = "low";
+
 function render() {
   mountChrome();
   const levels = getZipLevels();
-  const progress = getModeProgress("zip", "zip");
+  const progress = getModeProgress("zip", zipModeId(difficulty));
   const grid = document.getElementById("level-grid");
   if (!grid) return;
+  const picker = document.getElementById("zip-difficulty");
+  if (picker) {
+    picker.innerHTML = ZIP_DIFFICULTIES.map((mode) => `<button type="button" class="btn ${mode.id === difficulty ? "btn-fill" : ""}" data-difficulty="${mode.id}" aria-pressed="${mode.id === difficulty}">${mode.label}</button>`).join("");
+    picker.querySelectorAll("[data-difficulty]").forEach((button) => button.addEventListener("click", () => {
+      difficulty = button.dataset.difficulty;
+      history.replaceState(null, "", `/zip/?difficulty=${difficulty}`);
+      render();
+    }));
+  }
+  const description = document.getElementById("zip-difficulty-copy");
+  if (description) description.textContent = ZIP_DIFFICULTIES.find((mode) => mode.id === difficulty).copy;
 
   grid.innerHTML = levels
     .map((level) => {
       const row = progress[String(level.id)] || {};
-      const unlocked = isLevelUnlocked("zip", "zip", level.id);
-      const href = routes.zipPlay(level.id);
+      const unlocked = isLevelUnlocked("zip", zipModeId(difficulty), level.id);
+      const href = routes.zipPlay(level.id, difficulty);
       const cls = unlocked ? "card-link" : "card-link is-locked";
-      const hints = row.bestHints != null ? pad(row.bestHints) : "—";
-      const links = row.lastWaypoints ? pad(row.lastWaypoints) : "—";
+      const hints = row.bestHints != null ? pad(safeInt(row.bestHints, 999)) : "—";
+      const links = row.lastWaypoints ? pad(safeInt(row.lastWaypoints, 81)) : "—";
       return `
         <a class="${cls}" href="${unlocked ? href : "#"}" aria-disabled="${unlocked ? "false" : "true"}">
           <div class="cluster-between">

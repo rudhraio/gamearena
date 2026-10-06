@@ -1,4 +1,15 @@
 const KEY = "gamearena.v1";
+let memoryState = null;
+let storageFailed = false;
+
+export function safeInt(value, max = Number.MAX_SAFE_INTEGER) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.min(max, Math.max(0, Math.floor(number))) : 0;
+}
+
+function record(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
 
 const EMPTY = {
   version: 1,
@@ -29,23 +40,41 @@ function yesterdayStamp() {
 
 export function loadState() {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return structuredClone(EMPTY);
-    const parsed = JSON.parse(raw);
+    const raw = storageFailed ? null : localStorage.getItem(KEY);
+    const parsed = raw ? JSON.parse(raw) : memoryState;
+    if (!parsed) return JSON.parse(JSON.stringify(EMPTY));
+    const data = record(parsed);
+    const stats = record(data.stats);
+    const settings = record(data.settings);
     return {
-      ...structuredClone(EMPTY),
-      ...parsed,
-      stats: { ...EMPTY.stats, ...(parsed.stats || {}) },
-      settings: { ...EMPTY.settings, ...(parsed.settings || {}) },
-      games: parsed.games || {},
+      ...JSON.parse(JSON.stringify(EMPTY)),
+      version: 1,
+      stats: {
+        played: safeInt(stats.played),
+        correct: safeInt(stats.correct),
+        questions: safeInt(stats.questions),
+        streakDays: safeInt(stats.streakDays),
+        bestStreak: safeInt(stats.bestStreak),
+        lastPlayDate: /^\d{4}-\d{2}-\d{2}$/.test(stats.lastPlayDate) ? stats.lastPlayDate : null,
+      },
+      settings: {
+        sound: typeof settings.sound === "boolean" ? settings.sound : EMPTY.settings.sound,
+        installDismissed: settings.installDismissed === true,
+      },
+      games: record(data.games),
     };
   } catch {
-    return structuredClone(EMPTY);
+    return memoryState ? JSON.parse(JSON.stringify(memoryState)) : JSON.parse(JSON.stringify(EMPTY));
   }
 }
 
 export function saveState(state) {
-  localStorage.setItem(KEY, JSON.stringify(state));
+  memoryState = state;
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    storageFailed = true;
+  }
   return state;
 }
 
@@ -57,7 +86,7 @@ export function updateState(mutator) {
 
 export function getModeProgress(gameId, modeId) {
   const state = loadState();
-  return state.games?.[gameId]?.[modeId] || {};
+  return record(state.games?.[gameId]?.[modeId]);
 }
 
 export function isLevelUnlocked(gameId, modeId, levelId) {
@@ -79,11 +108,12 @@ export function recordRun({
   extra = null,
 }) {
   return updateState((state) => {
-    if (!state.games[gameId]) state.games[gameId] = {};
-    if (!state.games[gameId][modeId]) state.games[gameId][modeId] = {};
+    state.games[gameId] = record(state.games[gameId]);
+    state.games[gameId][modeId] = record(state.games[gameId][modeId]);
 
     const key = String(levelId);
-    const prev = state.games[gameId][modeId][key] || {
+    const prev = record(state.games[gameId][modeId][key]);
+    const previous = Object.keys(prev).length ? prev : {
       stars: 0,
       bestCorrect: 0,
       bestTimeMs: null,
@@ -92,22 +122,22 @@ export function recordRun({
     };
 
     const next = {
-      stars: Math.max(prev.stars, stars),
-      bestCorrect: Math.max(prev.bestCorrect, correct),
+      stars: Math.max(safeInt(previous.stars, 3), stars),
+      bestCorrect: Math.max(safeInt(previous.bestCorrect), correct),
       bestTimeMs:
-        prev.bestTimeMs == null ? timeMs : Math.min(prev.bestTimeMs, timeMs),
-      attempts: prev.attempts + 1,
-      completed: prev.completed || passed,
+        previous.bestTimeMs == null ? timeMs : Math.min(safeInt(previous.bestTimeMs), timeMs),
+      attempts: safeInt(previous.attempts) + 1,
+      completed: previous.completed === true || passed,
     };
 
     if (extra) {
       const hints = Number(extra.hints) || 0;
       const waypoints = Number(extra.waypoints) || 0;
       next.bestHints =
-        prev.bestHints == null ? hints : Math.min(prev.bestHints, hints);
+        previous.bestHints == null ? hints : Math.min(safeInt(previous.bestHints), hints);
       next.lastHints = hints;
       next.lastWaypoints = waypoints;
-      next.runs = [...(prev.runs || []), { timeMs, hints, waypoints, at: Date.now() }].slice(-40);
+      next.runs = [...(Array.isArray(previous.runs) ? previous.runs : []), { timeMs, hints, waypoints, at: Date.now() }].slice(-40);
     }
 
     state.games[gameId][modeId][key] = next;
@@ -142,7 +172,7 @@ export function modeCompletion(gameId, modeId, levelCount) {
   for (let i = 1; i <= levelCount; i += 1) {
     const row = progress[String(i)];
     if (row?.completed) done += 1;
-    stars += row?.stars || 0;
+    stars += safeInt(row?.stars, 3);
   }
   return { done, stars, total: levelCount };
 }

@@ -4,13 +4,15 @@
 export const ARENA = {
   name: "GAME ARENA",
   short: "GA",
-  tagline: "MATH. ZIP. RIDDLES.",
+  tagline: "MATH. ZIP. SUDOKU. MEMORY.",
 };
 
 export const routes = {
   hub: "/",
   math: "/math/",
   zip: "/zip/",
+  sudoku: "/sudoku/",
+  memory: "/memory/",
   riddles: "/riddles/",
   offline: "/offline/",
   levels(mode) {
@@ -19,8 +21,8 @@ export const routes = {
   play(mode, level) {
     return `/play/?mode=${encodeURIComponent(mode)}&level=${level}`;
   },
-  zipPlay(level) {
-    return `/zip/play/?level=${level}`;
+  zipPlay(level, difficulty = "low") {
+    return `/zip/play/?level=${level}&difficulty=${encodeURIComponent(difficulty)}`;
   },
 };
 
@@ -46,9 +48,29 @@ export const GAMES = [
     accent: "path",
   },
   {
+    id: "sudoku",
+    title: "SUDOKU",
+    kicker: "03 / LIVE",
+    tagline: "Nine digits. One solution.",
+    blurb: "Classic number logic in three difficulties. Your board saves as you play.",
+    href: routes.sudoku,
+    status: "live",
+    accent: "precision",
+  },
+  {
+    id: "memory",
+    title: "MEMORY",
+    kicker: "04 / LIVE",
+    tagline: "Watch. Hold. Repeat.",
+    blurb: "Repeat a growing sequence of tiles. Keep your focus through eight rounds.",
+    href: routes.memory,
+    status: "live",
+    accent: "path",
+  },
+  {
     id: "riddles",
     title: "RIDDLES",
-    kicker: "03 / SOON",
+    kicker: "05 / SOON",
     tagline: "Think sideways.",
     blurb: "Logic locks, word traps, and pattern riddles. Architecture is ready. Content lands next.",
     href: routes.riddles,

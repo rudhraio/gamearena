@@ -7,6 +7,8 @@ export const icon = {
   math: svg('<rect x="4" y="4" width="16" height="16"/><path d="M8 12h8M12 8v8"/>'),
   zip: svg('<rect x="4" y="4" width="16" height="16"/><path d="M7 7h4v4H9v6h8"/>'),
   riddle: svg('<circle cx="12" cy="9" r="4"/><path d="M10 13.5V16h4v-2.5"/><path d="M12 18v2"/>'),
+  sudoku: svg('<rect x="3" y="3" width="18" height="18"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>'),
+  memory: svg('<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>'),
   sound: svg('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9.5c1.2.8 1.2 4.2 0 5"/>'),
   play: svg('<rect x="4" y="4" width="16" height="16"/><path d="M10 8l6 4-6 4z"/>'),
   close: svg('<path d="M6 6l12 12M18 6L6 18"/>'),

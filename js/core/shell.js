@@ -23,5 +23,5 @@ export function mountChrome() {
     el.textContent = String(year);
   });
   initPwa();
-  initSoundToggle(document.querySelector("[data-sound]"));
+  initSoundToggle(document.querySelector("button[data-sound]"));
 }

@@ -9,6 +9,8 @@ import {
   numAt,
   parseEdge,
   zipStars,
+  ZIP_DIFFICULTIES,
+  zipModeId,
 } from "../games/zip.js";
 import { beep } from "../core/pwa.js";
 import { mountChrome } from "../core/shell.js";
@@ -30,6 +32,7 @@ function same(a, b) {
 document.addEventListener("alpine:init", () => {
   window.Alpine.data("zipPlay", () => ({
     levelId: Number(qs("level", "1")),
+    difficulty: qs("difficulty", "low"),
     level: null,
     puzzle: null,
     solution: null,
@@ -56,22 +59,23 @@ document.addEventListener("alpine:init", () => {
     wallList: [],
 
     init() {
+      if (!ZIP_DIFFICULTIES.some((mode) => mode.id === this.difficulty)) this.difficulty = "low";
       this.level = getZipLevel(this.levelId);
       if (!this.level) {
         window.location.replace(routes.zip);
         return;
       }
-      if (!isLevelUnlocked("zip", "zip", this.levelId)) {
-        window.location.replace(routes.zip);
+      if (!isLevelUnlocked("zip", zipModeId(this.difficulty), this.levelId)) {
+        window.location.replace(`${routes.zip}?difficulty=${this.difficulty}`);
         return;
       }
-      this.retryHref = routes.zipPlay(this.levelId);
+      this.retryHref = routes.zipPlay(this.levelId, this.difficulty);
       const levels = getZipLevels();
       this.nextLevel = levels.find((row) => row.id === this.levelId + 1) || null;
       this.nextHref = this.nextLevel
-        ? routes.zipPlay(this.nextLevel.id)
-        : routes.zip;
-      this.levelsHref = routes.zip;
+        ? routes.zipPlay(this.nextLevel.id, this.difficulty)
+        : `${routes.zip}?difficulty=${this.difficulty}`;
+      this.levelsHref = `${routes.zip}?difficulty=${this.difficulty}`;
       document.title = `ZIP ${pad(this.levelId)} · GAME ARENA`;
       const nav = document.querySelector("[data-nav]");
       if (nav) {
@@ -83,7 +87,7 @@ document.addEventListener("alpine:init", () => {
     },
 
     start() {
-      const built = generatePuzzle(this.level);
+      const built = generatePuzzle(this.level, this.difficulty);
       this.puzzle = built.puzzle;
       this.solution = built.solution;
       this.path = [];
@@ -368,7 +372,7 @@ document.addEventListener("alpine:init", () => {
       });
       recordRun({
         gameId: "zip",
-        modeId: "zip",
+        modeId: zipModeId(this.difficulty),
         levelId: this.levelId,
         correct: 1,
         total: 1,
@@ -388,3 +392,5 @@ document.addEventListener("alpine:init", () => {
     },
   }));
 });
+
+import("../vendor/alpine.min.js");

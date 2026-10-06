@@ -7,6 +7,15 @@ const LEVELS = [
   { id: 4, code: "GRID", size: 8, links: [12, 14], walls: [16, 28], threeStarMs: 180000 },
   { id: 5, code: "VECTOR", size: 9, links: [13, 15], walls: [22, 36], threeStarMs: 240000 },
 ];
+export const ZIP_DIFFICULTIES = [
+  { id: "low", label: "Low", copy: "More number clues and walls." },
+  { id: "medium", label: "Medium", copy: "Fewer clues and fewer walls." },
+  { id: "high", label: "High", copy: "Few clues and no walls." },
+];
+
+export function zipModeId(difficulty) {
+  return difficulty === "low" ? "zip" : `zip-${difficulty}`;
+}
 
 const DIRS = [
   [0, 1],
@@ -116,25 +125,16 @@ function generateHamiltonianPath(n) {
 }
 
 function pickLinkIndices(len, count) {
-  const segs = count - 1;
-  const picks = [0];
+  const indices = [0];
   for (let i = 1; i < count - 1; i += 1) {
-    const target = Math.round((i * (len - 1)) / segs);
-    const span = Math.max(1, Math.floor((len - 1) / segs / 3));
-    picks.push(Math.min(len - 2, Math.max(1, target + rand(-span, span))));
+    const target = Math.round((i * (len - 1)) / (count - 1));
+    const span = Math.max(1, Math.floor((len - 1) / (count - 1) / 3));
+    const min = indices[i - 1] + 1;
+    const max = len - (count - i);
+    indices.push(Math.max(min, Math.min(max, target + rand(-span, span))));
   }
-  picks.push(len - 1);
-
-  const unique = [...new Set(picks)].sort((a, b) => a - b);
-  for (let i = 1; i < unique.length && unique.length < count; i += 1) {
-    if (unique[i] - unique[i - 1] > 1) {
-      unique.splice(i, 0, unique[i - 1] + 1);
-    }
-  }
-  for (let i = 1; i < len - 1 && unique.length < count; i += 1) {
-    if (!unique.includes(i)) unique.push(i);
-  }
-  return [...new Set(unique)].sort((a, b) => a - b).slice(0, count);
+  indices.push(len - 1);
+  return indices;
 }
 
 function placeNumbers(path, count) {
@@ -202,9 +202,10 @@ export function maxVisitedNumber(puzzle, path) {
 }
 
 export function verifySolution(puzzle, path) {
+  if (!puzzle || !path) return false;
   const n = puzzle.size;
   const total = n * n;
-  if (!puzzle || !path || path.length !== total) return false;
+  if (path.length !== total) return false;
 
   const seen = new Set();
   for (let i = 0; i < path.length; i += 1) {
@@ -251,10 +252,10 @@ export function isComplete(puzzle, path) {
   return Boolean(puzzle) && path.length === puzzle.size * puzzle.size && verifySolution(puzzle, path);
 }
 
-function fallbackPuzzle(level) {
+function fallbackPuzzle(level, difficulty) {
   const n = level.size;
   const path = snakePath(n);
-  const links = level.links[0];
+  const links = difficulty === "high" ? Math.max(4, Math.round(level.links[0] * 0.55)) : level.links[0];
   return {
     puzzle: {
       size: n,
@@ -266,10 +267,13 @@ function fallbackPuzzle(level) {
   };
 }
 
-export function generatePuzzle(level) {
+export function generatePuzzle(level, difficulty = "low") {
   const n = level.size;
-  const links = rand(level.links[0], level.links[1]);
-  const wallCount = rand(level.walls[0], level.walls[1]);
+  const factor = difficulty === "high" ? 0.55 : difficulty === "medium" ? 0.75 : 1;
+  const links = rand(Math.max(4, Math.round(level.links[0] * factor)), Math.max(4, Math.round(level.links[1] * factor)));
+  const wallCount = difficulty === "high" ? 0 : difficulty === "medium"
+    ? rand(Math.floor(level.walls[0] / 3), Math.floor(level.walls[1] / 3))
+    : rand(level.walls[0], level.walls[1]);
 
   for (let attempt = 0; attempt < 24; attempt += 1) {
     const solution = generateHamiltonianPath(n);
@@ -282,7 +286,7 @@ export function generatePuzzle(level) {
     if (verifySolution(puzzle, solution)) return { puzzle, solution };
   }
 
-  const fallback = fallbackPuzzle(level);
+  const fallback = fallbackPuzzle(level, difficulty);
   if (!verifySolution(fallback.puzzle, fallback.solution)) {
     throw new Error("Zip generator failed to prove a path.");
   }

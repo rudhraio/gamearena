@@ -1,5 +1,5 @@
 import { getMode, qs, routes } from "../core/registry.js";
-import { getModeProgress, isLevelUnlocked } from "../core/storage.js";
+import { getModeProgress, isLevelUnlocked, safeInt } from "../core/storage.js";
 import { getMathLevels } from "../games/math.js";
 import { mountChrome } from "../core/shell.js";
 
@@ -50,7 +50,7 @@ function render() {
           <p class="mono body-mute">${level.desc}</p>
           <div class="cluster-between">
             <span class="chip ${unlocked ? "chip-fill" : ""}">${unlocked ? (row.completed ? "cleared" : "open") : "locked"}</span>
-            <span class="mono">${row.bestCorrect ? `${row.bestCorrect}/10` : "—/10"}</span>
+          <span class="mono">${row.bestCorrect ? `${safeInt(row.bestCorrect, 10)}/10` : "—/10"}</span>
           </div>
         </a>
       `;

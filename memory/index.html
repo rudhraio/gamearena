@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
+    <title>MEMORY SEQUENCE · GAME ARENA</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/app.css" />
+    <script type="module" src="/js/pages/memory.js"></script>
+  </head>
+  <body class="arena-bg">
+    <div id="install-bar" class="install-bar hidden">
+      <div class="page install-bar-inner">
+        <p class="wordmark" data-install-message>Install GAME ARENA</p>
+        <div class="cluster-sm"><button class="btn" data-dismiss type="button">Later</button><button class="btn btn-fill" data-install type="button">Install</button></div>
+      </div>
+    </div>
+    <div class="page">
+      <header class="site-header" data-nav data-back="/" data-crumbs="Hub:/" data-current="Memory"></header>
+      <section class="page-hero enter">
+        <p class="kicker">MEMORY / SEQUENCE</p>
+        <div class="page-hero-row">
+          <h1 class="display">HOLD THE PATTERN</h1>
+          <p class="body-mute">Watch the lit tiles, then repeat them in order. One tile is added each round.</p>
+        </div>
+        <hr class="rule" />
+      </section>
+      <main class="memory-layout section">
+        <div class="panel pad stack-lg">
+          <div class="cluster-between"><p class="kicker" id="memory-round">ROUND 00 / 08</p><p class="mono" id="memory-best">BEST 00</p></div>
+          <div class="memory-board" id="memory-board" aria-label="Sequence tiles">
+            <button class="memory-tile" type="button" data-tile="0" aria-label="Tile 1">1</button>
+            <button class="memory-tile" type="button" data-tile="1" aria-label="Tile 2">2</button>
+            <button class="memory-tile" type="button" data-tile="2" aria-label="Tile 3">3</button>
+            <button class="memory-tile" type="button" data-tile="3" aria-label="Tile 4">4</button>
+          </div>
+          <p id="memory-status" class="body-mute" role="status" aria-live="polite">Press Start to see the first pattern.</p>
+          <button id="memory-start" class="btn btn-fill" type="button">Start run</button>
+        </div>
+        <div class="panel pad stack">
+          <p class="kicker">How to play</p>
+          <p class="body-mute">Watch the tiles flash. Tap them back in the same order. A mistake ends the run. Reach round eight to clear the game.</p>
+          <p class="body-mute">Keyboard: keys 1–4 select tiles.</p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

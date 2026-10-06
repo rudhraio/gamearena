@@ -10,18 +10,13 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/app.css" />
     <script type="module" src="/js/pages/zip-play.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
   </head>
-  <body class="arena-bg" x-data="zipPlay">
+  <body class="arena-bg zip-body" x-data="zipPlay">
     <div id="install-bar" class="install-bar hidden">
       <div class="page install-bar-inner">
-        <p class="wordmark">Install GAME ARENA</p>
+        <p class="wordmark" data-install-message>Install GAME ARENA</p>
         <div class="cluster-sm">
           <button class="btn" data-dismiss type="button">Later</button>
           <button class="btn btn-fill" data-install type="button">Install</button>
@@ -117,9 +112,9 @@
         <a class="drawer-close" :href="levelsHref" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </a>
-        <p class="kicker" x-text="level ? `ZIP · ${level.size}×${level.size}` : ''"></p>
+        <p class="kicker" x-text="level ? `ZIP · ${difficulty.toUpperCase()} · ${level.size}×${level.size}` : ''"></p>
         <h2 class="display" x-text="level ? level.name : 'GO'"></h2>
-        <p class="body-mute body-full">Start on 1. Draw one path through every cell. Hit the numbers in order. Drag back to erase. Walls block. Hints are unlimited.</p>
+        <p class="body-mute body-full">Start on 1. Draw one path through every cell. Hit the numbers in order. Drag back to erase. Hints are unlimited. <span x-show="difficulty !== 'high'">Walls block the line.</span></p>
         <div class="actions is-stack">
           <button class="btn btn-fill btn-svg" type="button" @click="start()">Start run</button>
           <a class="btn btn-back" :href="levelsHref">

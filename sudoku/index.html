@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f2ec" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
+    <title>SUDOKU · GAME ARENA</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/css/app.css" />
+    <script type="module" src="/js/pages/sudoku.js"></script>
+  </head>
+  <body class="arena-bg sudoku-page">
+    <div id="install-bar" class="install-bar hidden">
+      <div class="page install-bar-inner">
+        <p class="wordmark" data-install-message>Install GAME ARENA</p>
+        <div class="cluster-sm"><button class="btn" data-dismiss type="button">Later</button><button class="btn btn-fill" data-install type="button">Install</button></div>
+      </div>
+    </div>
+    <div class="page">
+      <header class="site-header" data-nav data-back="/" data-crumbs="Hub:/" data-current="Sudoku"></header>
+      <section class="page-hero enter">
+        <p class="kicker">SUDOKU / LOGIC</p>
+        <div class="page-hero-row">
+          <h1 class="display">NUMBER GRID</h1>
+          <p class="body-mute">Fill each row, column, and 3×3 box with 1–9. Every puzzle has one solution.</p>
+        </div>
+        <hr class="rule" />
+      </section>
+      <main class="sudoku-layout section">
+        <div>
+          <div class="cluster-between"><p class="kicker" id="sudoku-status">Choose a difficulty</p><p class="mono" id="sudoku-clock">00:00</p></div>
+          <div id="sudoku-board" class="sudoku-board" role="grid" aria-label="Sudoku puzzle"></div>
+          <div id="sudoku-keypad" class="sudoku-keypad" aria-label="Number keys"></div>
+          <p id="sudoku-feedback" class="body-mute" role="status" aria-live="polite"></p>
+        </div>
+        <div class="stack-lg">
+          <div class="panel pad stack">
+            <p class="kicker">Difficulty</p>
+            <div id="sudoku-difficulty" class="choice-row"></div>
+            <button id="sudoku-new" class="btn btn-fill" type="button">New puzzle</button>
+            <p class="body-mute">Your current board is saved on this device.</p>
+          </div>
+          <div class="panel pad stack">
+            <p class="kicker">Tools</p>
+            <div class="choice-row">
+              <button id="sudoku-notes" class="btn" type="button" aria-pressed="false">Notes off</button>
+              <button id="sudoku-erase" class="btn" type="button">Erase</button>
+              <button id="sudoku-hint" class="btn" type="button">Hint</button>
+            </div>
+            <p class="body-mute">Tap a cell, then a number. Notes let you mark possible values. Conflicting values turn red.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

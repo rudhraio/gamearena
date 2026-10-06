@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f2ec" />
     <meta name="color-scheme" content="light" />
-    <meta name="description" content="GAME ARENA — a standalone arcade of math, zip, and riddle games. Local progress. No login." />
+    <meta name="description" content="GAME ARENA — math, zip, sudoku, and memory games. Local progress. No login." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="GAME ARENA" />
@@ -13,12 +13,7 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/app.css" />
-    <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
     <script type="module" src="/js/pages/hub.js"></script>
   </head>
   <body class="arena-bg">
@@ -27,7 +22,7 @@
     </noscript>
     <div id="install-bar" class="install-bar hidden">
       <div class="page install-bar-inner">
-        <p class="wordmark">Install GAME ARENA as a standalone app</p>
+        <p class="wordmark" data-install-message>Install GAME ARENA as a standalone app</p>
         <div class="cluster-sm">
           <button class="btn" data-dismiss type="button">Later</button>
           <button class="btn btn-fill" data-install type="button">Install</button>
@@ -42,7 +37,7 @@
         <p class="kicker">00 / Arcade hub</p>
         <div class="page-hero-row">
           <h1 class="display-xl">PLAY<br />CLEAN.</h1>
-          <p class="body-mute">A light, boxy cockpit for math, zip, and riddles. Progress lives on this device. Install it. Drive it.</p>
+          <p class="body-mute">A light, boxy cockpit for math, zip, sudoku, and memory games. Progress lives on this device. Install it. Drive it.</p>
         </div>
         <hr class="rule" />
       </section>
@@ -83,18 +78,13 @@
               <li>No accounts. Scores stay in local storage.</li>
               <li>Math answers are always buttons — never a text field.</li>
               <li>Zip draws a new path riddle every run. Clear a size to open the next grid.</li>
+              <li>Sudoku has three difficulties. Memory Sequence grows with each round.</li>
               <li>Install as a PWA and play offline after first load.</li>
             </ul>
-            <button
-              class="btn"
-              type="button"
-              hx-get="/partials/briefing.html"
-              hx-target="#briefing-slot"
-              hx-swap="innerHTML"
-            >
-              Load spec sheet
-            </button>
-            <div id="briefing-slot"></div>
+            <details class="panel-flat pad">
+              <summary>Game guide</summary>
+              <p>Choose a game and stage. Math runs ten questions; Zip asks you to fill every cell in number order; Sudoku fills rows, columns, and boxes with 1–9.</p>
+            </details>
           </div>
         </div>
       </section>

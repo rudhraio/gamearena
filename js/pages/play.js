@@ -177,3 +177,5 @@ document.addEventListener("alpine:init", () => {
     },
   }));
 });
+
+import("../vendor/alpine.min.js");
